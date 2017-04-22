@@ -247,7 +247,14 @@ namespace LudumDare38.Graphics
 			DrawRect(new Vector3(rectangle.Left, rectangle.Top, 0), new Vector3(rectangle.Left, rectangle.Bottom, 0), new Vector3(rectangle.Right, rectangle.Bottom, 0), new Vector3(rectangle.Right, rectangle.Top, 0), color);
 		}
 
-		public void DrawImage(RectangleF rectangle, Texture texture, Color4? tint = null, RectangleF? region = null)
+		public void DrawImage(Texture texture, Vector2 position, Color4? tint = null, RectangleF? region = null)
+		{
+			RectangleF finalRegion = region ?? texture.Bounds;
+
+			DrawImage(texture, new RectangleF(position.X, position.Y, finalRegion.Width, finalRegion.Height), tint, region);
+		}
+
+		public void DrawImage(Texture texture, RectangleF rectangle, Color4? tint = null, RectangleF? region = null)
 		{
 			RectangleF finalRegion = region ?? texture.Bounds;
 

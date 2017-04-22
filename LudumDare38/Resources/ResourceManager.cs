@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -50,6 +51,10 @@ namespace LudumDare38.Resources
 			else if (type == typeof(byte[]))
 			{
 				return stream.ReadAllBytes() as T;
+			}
+			else if (type == typeof(Bitmap))
+			{
+				return new Bitmap(stream) as T;
 			}
 
 			throw new InvalidOperationException($"Cannot load resource of type {type}");

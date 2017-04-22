@@ -54,6 +54,7 @@
     <Compile Include="Graphics\BaseShaderProgram.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Graphics\LitPrimitivesShaderProgram.cs" />
+    <Compile Include="Graphics\Textures.cs" />
     <Compile Include="Resources\EmbeddedResources.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Game.Window.cs" />
@@ -84,6 +85,9 @@
     <EmbeddedResource Include="Resources\primitives_frag.glsl" />
     <EmbeddedResource Include="Resources\primitives_vert.glsl" />
     <EmbeddedResource Include="Resources\lit_primitives_frag.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\items.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

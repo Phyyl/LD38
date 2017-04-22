@@ -7,11 +7,17 @@ namespace LudumDare38.Graphics
 {
 	public partial class Texture
 	{
-		internal static TextureLoaderSettings LoaderSettings { get; } = new TextureLoaderSettings();
-		
-		internal static Texture LoadFromStream(Stream stream)
+		public static TextureLoaderSettings LoaderSettings { get; } = new TextureLoaderSettings();
+
+		public static Texture LoadFromBitmap(Bitmap bitmap, Rectangle? region = null)
 		{
-			Bitmap bitmap = new Bitmap(stream);
+			if (region.HasValue)
+			{
+				Bitmap subImage = new Bitmap(region.Value.Width, region.Value.Height);
+				System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(subImage);
+				g.DrawImage(bitmap, new Rectangle(0, 0, region.Value.Width, region.Value.Height), region.Value, GraphicsUnit.Pixel);
+				bitmap = subImage;
+			}
 
 			Texture result = new Texture()
 			{
@@ -24,7 +30,7 @@ namespace LudumDare38.Graphics
 			result.Bind();
 
 			GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
-			
+
 			if (LoaderSettings.LODBias < 0)
 			{
 				GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
@@ -43,7 +49,14 @@ namespace LudumDare38.Graphics
 			return result;
 		}
 
-		internal class TextureLoaderSettings
+		public static Texture LoadFromStream(Stream stream)
+		{
+			Bitmap bitmap = new Bitmap(stream);
+
+			return LoadFromBitmap(bitmap);
+		}
+
+		public class TextureLoaderSettings
 		{
 			public const TextureMagFilter DefaultMagFilter = TextureMagFilter.Linear;
 			public const TextureMinFilter DefaultMinFilter = TextureMinFilter.Linear;

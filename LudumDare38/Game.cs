@@ -7,6 +7,7 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,7 +28,8 @@ namespace LudumDare38
 
 		private void Load()
 		{
-			Shaders.InitializeShaders();
+			Shaders.Initialize();
+			Textures.Initialize();
 
 			renderContext3D = new RenderContext();
 			renderContext2D = new RenderContext();
@@ -40,7 +42,7 @@ namespace LudumDare38
 			GL.Viewport(0, 0, width, height);
 
 			renderContext3D.ViewMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver6, (float)width / height, 0.01f, 100f);
-			renderContext3D.ViewMatrix = Matrix4.CreateOrthographicOffCenter(0, width, height, 0, 1, -1);
+			renderContext2D.ViewMatrix = Matrix4.CreateOrthographicOffCenter(0, width, height, 0, 1, -1);
 		}
 
 		private void Update(float delta)
