@@ -48,13 +48,13 @@ namespace LudumDare38
 
 		private void Window_RenderFrame(object sender, FrameEventArgs e)
 		{
-			Render();
+			Render((float)e.Time);
 			window.SwapBuffers();
 		}
 
 		public void Run()
 		{
-			window.Run(60);
+			window.Run(120);
 		}
 	}
 }

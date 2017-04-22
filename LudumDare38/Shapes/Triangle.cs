@@ -21,5 +21,13 @@ namespace LudumDare38.Shapes
 			B = b;
 			C = c;
 		}
+
+		public Vector3 GetNormal()
+		{
+			Vector3 u = B - A;
+			Vector3 v = C - A;
+
+			return new Vector3((u.Y * v.Z) - (u.Z * v.Y), (u.Z * v.X) - (u.X * v.Z), (u.X * v.Y) - (u.Y * v.X)).Normalized();
+		}
 	}
 }

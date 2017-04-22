@@ -1,4 +1,5 @@
 ﻿using LudumDare38.Graphics;
+using LudumDare38.Maths;
 using LudumDare38.Shapes;
 using Newtonsoft.Json;
 using OpenTK;
@@ -7,6 +8,7 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +17,8 @@ namespace LudumDare38
 {
 	public partial class Game
 	{
-		private RenderContext renderContext;
+		private RenderContext renderContext3D;
+		private RenderContext renderContext2D;
 
 		Triangle[] triangles;
 
@@ -31,9 +34,11 @@ namespace LudumDare38
 
 		private void Load()
 		{
-			Shaders.InitializeShaders();
+			Shaders.Initialize();
+			Textures.Initialize();
 
-			renderContext = new RenderContext();
+			renderContext3D = new RenderContext();
+			renderContext2D = new RenderContext();
 
 			triangles = IcoSphereGenerator.Generate();
 
@@ -47,7 +52,8 @@ namespace LudumDare38
 		{
 			GL.Viewport(0, 0, width, height);
 
-			renderContext.ViewMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver6, (float)width / height, 0.01f, 100f);
+			renderContext3D.ViewMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver6, (float)width / height, 0.01f, 100f);
+			renderContext2D.ViewMatrix = Matrix4.CreateOrthographicOffCenter(0, width, height, 0, 1, -1);
 		}
 
 		private void Update(float delta)
@@ -62,25 +68,30 @@ namespace LudumDare38
 		float angle;
 		Random random = new Random();
 
-		private void Render()
+		private void Render(float delta)
 		{
-			renderContext.Clear();
+			renderContext3D.Clear();
 
-			renderContext.EnableDepth();
-			renderContext.EnableTransparency();
+			renderContext3D.EnableTransparency();
+			renderContext3D.EnableDepth();
+			Render3D(delta);
 
-			renderContext.LoadIdentity();
-			renderContext.RotateY(angle += 0.001f);
-			renderContext.Translate(0, 0, -10);
+			renderContext2D.DisableDepth();
+			RenderUI(delta);
+		}
+
+		private void Render3D(float delta)
+		{
+			renderContext3D.LoadIdentity();
+			renderContext3D.RotateY(angle += delta);
+			renderContext3D.Translate(0, 0, -10);
 
 			foreach (var triangle in triangles)
 			{
-				Color4 color = Color4.Red;
-				
-				renderContext.DrawTriangle(triangle.A, triangle.B, triangle.C, color);
+				DrawTriangle(triangle, Color4.Red);
 			}
 		}
-
+        
         private void MoveCharacter()
         {
             Pos pos = characterPos;
@@ -128,5 +139,28 @@ namespace LudumDare38
             public int X;
             public int Y;
         }
+
+		private void RenderUI(float delta)
+		{
+
+		}
+
+		private void DrawTriangle(Triangle triangle, Color4 color)
+		{
+			Shaders.LitPrimitives.Use();
+			Shaders.LitPrimitives.Begin(renderContext3D.GetMatrices(), new Vector3(0, 0, -1).Normalized());
+
+			Vector4 colorVector = color.ToVector();
+			Vector3 normal = triangle.GetNormal();
+
+			renderContext3D.BeginDrawArrays(new Vertex[]
+			{
+				new Vertex(triangle.A, colorVector, normal: normal),
+				new Vertex(triangle.B, colorVector, normal: normal),
+				new Vertex(triangle.C, colorVector, normal: normal)
+			});
+
+			renderContext3D.DrawArrays(PrimitiveType.Triangles);
+		}
 	}
 }

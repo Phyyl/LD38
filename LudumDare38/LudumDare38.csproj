@@ -42,6 +42,9 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -54,11 +57,15 @@
     <Compile Include="Graphics\BaseShaderProgram.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Level.cs" />
+    <Compile Include="Graphics\LitPrimitivesShaderProgram.cs" />
+    <Compile Include="Graphics\Textures.cs" />
+    <Compile Include="Maths\RayTracing.cs" />
+    <Compile Include="Maths\VectorMath.cs" />
     <Compile Include="Resources\EmbeddedResources.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Game.Window.cs" />
     <Compile Include="Extensions\GraphicsExtensions.cs" />
-    <Compile Include="IcoSphereGenerator.cs" />
+    <Compile Include="Maths\IcoSphereGenerator.cs" />
     <Compile Include="Extensions\IOExtensions.cs" />
     <Compile Include="Extensions\MathExtensions.cs" />
     <Compile Include="Extensions\MiscExtensions.cs" />
@@ -69,6 +76,7 @@
     <Compile Include="Graphics\Shader.cs" />
     <Compile Include="Graphics\ShaderProgram.cs" />
     <Compile Include="Graphics\Shaders.cs" />
+    <Compile Include="Shapes\Ray.cs" />
     <Compile Include="Shapes\Triangle.cs" />
     <Compile Include="Extensions\TaskExtensions.cs" />
     <Compile Include="Graphics\Texture.cs" />
@@ -84,6 +92,10 @@
     <None Include="packages.config" />
     <EmbeddedResource Include="Resources\primitives_frag.glsl" />
     <EmbeddedResource Include="Resources\primitives_vert.glsl" />
+    <EmbeddedResource Include="Resources\lit_primitives_frag.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\items.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\levels.json">
