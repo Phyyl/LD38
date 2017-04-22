@@ -1,4 +1,5 @@
-﻿using LudumDare38.Shapes;
+﻿using LudumDare38.Graphics;
+using LudumDare38.Shapes;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
