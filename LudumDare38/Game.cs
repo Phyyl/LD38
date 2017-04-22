@@ -15,7 +15,8 @@ namespace LudumDare38
 {
 	public partial class Game
 	{
-		private RenderContext renderContext;
+		private RenderContext renderContext3D;
+		private RenderContext renderContext2D;
 
 		Triangle[] triangles;
 
@@ -28,7 +29,8 @@ namespace LudumDare38
 		{
 			Shaders.InitializeShaders();
 
-			renderContext = new RenderContext();
+			renderContext3D = new RenderContext();
+			renderContext2D = new RenderContext();
 
 			triangles = IcoSphereGenerator.Generate();
 		}
@@ -37,7 +39,8 @@ namespace LudumDare38
 		{
 			GL.Viewport(0, 0, width, height);
 
-			renderContext.ViewMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver6, (float)width / height, 0.01f, 100f);
+			renderContext3D.ViewMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver6, (float)width / height, 0.01f, 100f);
+			renderContext3D.ViewMatrix = Matrix4.CreateOrthographicOffCenter(0, width, height, 0, 1, -1);
 		}
 
 		private void Update(float delta)
@@ -50,14 +53,21 @@ namespace LudumDare38
 
 		private void Render(float delta)
 		{
-			renderContext.Clear();
+			renderContext3D.Clear();
 
-			renderContext.EnableDepth();
-			renderContext.EnableTransparency();
+			renderContext3D.EnableTransparency();
+			renderContext3D.EnableDepth();
+			Render3D(delta);
 
-			renderContext.LoadIdentity();
-			renderContext.RotateY(angle += delta);
-			renderContext.Translate(0, 0, -10);
+			renderContext2D.DisableDepth();
+			RenderUI(delta);
+		}
+
+		private void Render3D(float delta)
+		{
+			renderContext3D.LoadIdentity();
+			renderContext3D.RotateY(angle += delta);
+			renderContext3D.Translate(0, 0, -10);
 
 			foreach (var triangle in triangles)
 			{
@@ -65,22 +75,27 @@ namespace LudumDare38
 			}
 		}
 
+		private void RenderUI(float delta)
+		{
+
+		}
+
 		private void DrawTriangle(Triangle triangle)
 		{
 			Shaders.LitPrimitives.Use();
-			Shaders.LitPrimitives.Begin(renderContext.GetMatrices(), new Vector3(0, 0, -1).Normalized());
+			Shaders.LitPrimitives.Begin(renderContext3D.GetMatrices(), new Vector3(0, 0, -1).Normalized());
 
 			Vector4 color = Color4.Red.ToVector();
 			Vector3 normal = triangle.GetNormal();
 
-			renderContext.BeginDrawArrays(new Vertex[]
+			renderContext3D.BeginDrawArrays(new Vertex[]
 			{
 				new Vertex(triangle.A, color, normal: normal),
 				new Vertex(triangle.B, color, normal: normal),
 				new Vertex(triangle.C, color, normal: normal)
 			});
 
-			renderContext.DrawArrays(PrimitiveType.Triangles);
+			renderContext3D.DrawArrays(PrimitiveType.Triangles);
 		}
 	}
 }
