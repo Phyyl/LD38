@@ -9,33 +9,35 @@ namespace LudumDare38.Graphics
 {
 	public class BaseShaderProgram : ShaderProgram
 	{
-		public int MvpMatrixLocation { get; private set; }
+		public int ProjectionMatrixLocation { get; private set; }
+		public int ViewMatrixLocation { get; private set; }
+		public int ModelMatrixLocation { get; private set; }
+		public int NormalMatrixLocation { get; private set; }
 		public int TexturedLocation { get; private set; }
 		public int PositionLocation { get; private set; }
 		public int ColorLocation { get; private set; }
 		public int TexCoordLocation { get; private set; }
 		public int NormalLocation { get; private set; }
 
-		public BaseShaderProgram(Shader vertexShader, Shader vragmentShader)
+		public BaseShaderProgram(Shader vertexShader, Shader fragmentShader)
 		{
-			CompileAndLink(vertexShader, vragmentShader);
+			CompileAndLink(vertexShader, fragmentShader);
 		}
 
-		public override bool Link()
+
+		protected override void InitializeLocations()
 		{
-			if (base.Link())
-			{
-				MvpMatrixLocation = GetUniformLocation("mvp_matrix");
-				TexturedLocation = GetUniformLocation("textured");
-				PositionLocation = GetAttribLocation("vert_position");
-				ColorLocation = GetAttribLocation("vert_color");
-				TexCoordLocation = GetAttribLocation("vert_tex_coord");
-				NormalLocation = GetAttribLocation("vert_normal");
+			base.InitializeLocations();
 
-				return true;
-			}
-
-			return false;
+			ModelMatrixLocation = GetUniformLocation("model_matrix");
+			ViewMatrixLocation = GetUniformLocation("view_matrix");
+			ProjectionMatrixLocation = GetUniformLocation("projection_matrix");
+			NormalMatrixLocation = GetUniformLocation("normal_matrix");
+			TexturedLocation = GetUniformLocation("textured");
+			PositionLocation = GetAttribLocation("vert_position");
+			ColorLocation = GetAttribLocation("vert_color");
+			TexCoordLocation = GetAttribLocation("vert_tex_coord");
+			NormalLocation = GetAttribLocation("vert_normal");
 		}
 
 		public virtual void Setup(Vao vao, Vbo vbo)

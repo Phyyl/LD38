@@ -33,7 +33,9 @@ namespace LudumDare38.Graphics
 			set { SetModelMatrix(value); }
 		}
 
+		public Matrix4 NormalMatrix => Matrix4.Transpose(Matrix4.Invert(ModelMatrix));
 		public Matrix4 MvpMatrix => CurrentState.ModelMatrix * CurrentState.ViewMatrix * CurrentState.ProjectionMatrix;
+		public Matrix4 MvMatrix => CurrentState.ModelMatrix * CurrentState.ViewMatrix;
 
 		public MatrixMode MatrixMode { get; set; } = MatrixMode.Model;
 
@@ -43,8 +45,14 @@ namespace LudumDare38.Graphics
 			vbo = new Vbo();
 
 			Shaders.BasePrimitives.Setup(vao, vbo);
+			Shaders.LitPrimitives.Setup(vao, vbo);
 
 			PushIdentity();
+		}
+
+		public (Matrix4, Matrix4, Matrix4, Matrix4) GetMatrices()
+		{
+			return (ProjectionMatrix, ViewMatrix, ModelMatrix, NormalMatrix);
 		}
 
 		public void Pop()
@@ -264,7 +272,7 @@ namespace LudumDare38.Graphics
 		{
 			BeginDrawArrays(vertices);
 			Shaders.BasePrimitives.Use();
-			Shaders.BasePrimitives.Begin(MvpMatrix, texture != null);
+			Shaders.BasePrimitives.Begin(GetMatrices(), texture != null);
 			DrawArrays(primitiveType, texture);
 			Shaders.BasePrimitives.Unuse();
 		}

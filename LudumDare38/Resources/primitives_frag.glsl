@@ -5,6 +5,7 @@ uniform bool textured;
 
 in vec2 vert_frag_tex_coord;
 in vec4 vert_frag_color;
+in vec3 vert_frag_normal;
 
 out vec4 frag_color;
 

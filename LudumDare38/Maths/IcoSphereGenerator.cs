@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LudumDare38
+namespace LudumDare38.Maths
 {
 	public static class IcoSphereGenerator
 	{

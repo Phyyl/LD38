@@ -1,4 +1,5 @@
 ﻿using LudumDare38.Graphics;
+using LudumDare38.Maths;
 using LudumDare38.Shapes;
 using OpenTK;
 using OpenTK.Graphics;
@@ -47,7 +48,7 @@ namespace LudumDare38
 		float angle;
 		Random random = new Random();
 
-		private void Render()
+		private void Render(float delta)
 		{
 			renderContext.Clear();
 
@@ -55,15 +56,31 @@ namespace LudumDare38
 			renderContext.EnableTransparency();
 
 			renderContext.LoadIdentity();
-			renderContext.RotateY(angle += 0.001f);
+			renderContext.RotateY(angle += delta);
 			renderContext.Translate(0, 0, -10);
 
 			foreach (var triangle in triangles)
 			{
-				Color4 color = Color4.Red;
-				
-				renderContext.DrawTriangle(triangle.A, triangle.B, triangle.C, color);
+				DrawTriangle(triangle);
 			}
+		}
+
+		private void DrawTriangle(Triangle triangle)
+		{
+			Shaders.LitPrimitives.Use();
+			Shaders.LitPrimitives.Begin(renderContext.GetMatrices(), new Vector3(0, 0, -1).Normalized());
+
+			Vector4 color = Color4.Red.ToVector();
+			Vector3 normal = triangle.GetNormal();
+
+			renderContext.BeginDrawArrays(new Vertex[]
+			{
+				new Vertex(triangle.A, color, normal: normal),
+				new Vertex(triangle.B, color, normal: normal),
+				new Vertex(triangle.C, color, normal: normal)
+			});
+
+			renderContext.DrawArrays(PrimitiveType.Triangles);
 		}
 	}
 }

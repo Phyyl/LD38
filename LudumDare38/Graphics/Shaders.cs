@@ -11,12 +11,16 @@ namespace LudumDare38.Graphics
 	public static class Shaders
 	{
 		public static BasePrimitivesShaderProgram BasePrimitives;
+		public static LitPrimitivesShaderProgram LitPrimitives;
 
 		public static void InitializeShaders()
 		{
-			Shader baseVertexShader = new Shader(ShaderType.VertexShader, GetShaderSource("Resources/primitives_vert.glsl"));
-			Shader baseFragmentShader = new Shader(ShaderType.FragmentShader, GetShaderSource("Resources/primitives_frag.glsl"));
-			BasePrimitives = new BasePrimitivesShaderProgram(baseVertexShader, baseFragmentShader);
+			Shader vertexShader = new Shader(ShaderType.VertexShader, GetShaderSource("Resources/primitives_vert.glsl"));
+			Shader fragmentShader = new Shader(ShaderType.FragmentShader, GetShaderSource("Resources/primitives_frag.glsl"));
+			BasePrimitives = new BasePrimitivesShaderProgram(vertexShader, fragmentShader);
+
+			fragmentShader = new Shader(ShaderType.FragmentShader, GetShaderSource("Resources/lit_primitives_frag.glsl"));
+			LitPrimitives = new LitPrimitivesShaderProgram(vertexShader, fragmentShader);
 		}
 
 		private static string GetShaderSource(string path)

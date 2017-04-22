@@ -16,8 +16,7 @@ namespace LudumDare38.Graphics
 		{
 			get
 			{
-				int status;
-				GL.GetProgram(ID, GetProgramParameterName.LinkStatus, out status);
+				GL.GetProgram(ID, GetProgramParameterName.LinkStatus, out int status);
 				return status == 1;
 			}
 		}
@@ -37,12 +36,22 @@ namespace LudumDare38.Graphics
 			AttachShader(shader.ID);
 		}
 
-		public virtual bool Link()
+		public bool Link()
 		{
 			GL.LinkProgram(ID);
 			GL.ValidateProgram(ID);
 
+			if (Linked)
+			{
+				InitializeLocations();
+			}
+
 			return Linked;
+		}
+
+		protected virtual void InitializeLocations()
+		{
+
 		}
 
 		public void Use()
