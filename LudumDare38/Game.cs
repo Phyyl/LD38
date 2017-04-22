@@ -1,5 +1,6 @@
 ﻿using LudumDare38.Graphics;
 using LudumDare38.Shapes;
+using Newtonsoft.Json;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -18,6 +19,11 @@ namespace LudumDare38
 
 		Triangle[] triangles;
 
+        private Pos characterPos;
+
+        int currentLevel;
+        Level[] levels;
+
 		public Game()
 		{
 			InitializeWindow();
@@ -30,7 +36,12 @@ namespace LudumDare38
 			renderContext = new RenderContext();
 
 			triangles = IcoSphereGenerator.Generate();
-		}
+
+            // character Start position determined in the map file
+            characterPos = new Pos { X = 0, Y = 0 };
+
+            levels = JsonConvert.DeserializeObject<Level[]>(Resources.ResourceManager.LoadEmbedded<string>("Resources/levels.json"));
+        }
 
 		private void Resize(int width, int height)
 		{
@@ -41,7 +52,11 @@ namespace LudumDare38
 
 		private void Update(float delta)
 		{
-
+            // if level is not done
+            if (levels[currentLevel].Map[characterPos.X, characterPos.Y] != 100 /*&& in a level*/)
+            {
+                MoveCharacter(); ;
+            }
 		}
 
 		float angle;
@@ -65,5 +80,53 @@ namespace LudumDare38
 				renderContext.DrawTriangle(triangle.A, triangle.B, triangle.C, color);
 			}
 		}
+
+        private void MoveCharacter()
+        {
+            Pos pos = characterPos;
+            int[,] map = levels[currentLevel].Map;
+
+            // some movement have priority over other if pressed at the same time cuz im that bad
+            if (IsDownPressed)
+            {
+                if (pos.Y < 8
+                    && ((pos.X % 2 == 0 && pos.Y % 2 != 0)
+                    || (pos.X % 2 != 0 && pos.Y % 2 == 0))
+                    && map[pos.X, pos.Y + 1] != 0)
+                {
+                    characterPos.Y++;
+                }
+            }
+            else if (IsLeftPressed)
+            {
+                if (pos.X > 0 && map[pos.X - 1, pos.Y] != 0)
+                {
+                    characterPos.X--;
+                }
+            }
+            else if (IsRightPressed)
+            {
+                if (pos.X < 15 - 1 && map[pos.X + 1, pos.Y] != 0)
+                {
+                    characterPos.X++;
+                }
+            }
+            else if (IsUpPressed)
+            {
+                if (pos.X > 0 
+                    && ((pos.X % 2 == 0 && pos.Y % 2 == 0) 
+                    || (pos.X % 2 != 0 && pos.Y % 2 != 0)) 
+                    && map[pos.X, pos.Y - 1] != 0)
+                {
+                    characterPos.Y--;
+                }
+            }
+        }
+
+        struct Pos
+        {
+            public int X;
+            public int Y;
+        }
 	}
 }

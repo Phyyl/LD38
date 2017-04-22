@@ -41,7 +41,10 @@ namespace LudumDare38
 		private void Window_UpdateFrame(object sender, FrameEventArgs e)
 		{
 			Update((float)e.Time);
-		}
+
+            previousKbState = currentKbState;
+            currentKbState = window.Keyboard.GetState();
+        }
 
 		private void Window_RenderFrame(object sender, FrameEventArgs e)
 		{
