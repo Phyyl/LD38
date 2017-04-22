@@ -73,7 +73,7 @@ namespace LudumDare38
 
 			foreach (var triangle in triangles)
 			{
-				DrawTriangle(triangle);
+				DrawTriangle(triangle, Color4.Red);
 			}
 		}
 
@@ -82,19 +82,19 @@ namespace LudumDare38
 
 		}
 
-		private void DrawTriangle(Triangle triangle)
+		private void DrawTriangle(Triangle triangle, Color4 color)
 		{
 			Shaders.LitPrimitives.Use();
 			Shaders.LitPrimitives.Begin(renderContext3D.GetMatrices(), new Vector3(0, 0, -1).Normalized());
 
-			Vector4 color = Color4.Red.ToVector();
+			Vector4 colorVector = color.ToVector();
 			Vector3 normal = triangle.GetNormal();
 
 			renderContext3D.BeginDrawArrays(new Vertex[]
 			{
-				new Vertex(triangle.A, color, normal: normal),
-				new Vertex(triangle.B, color, normal: normal),
-				new Vertex(triangle.C, color, normal: normal)
+				new Vertex(triangle.A, colorVector, normal: normal),
+				new Vertex(triangle.B, colorVector, normal: normal),
+				new Vertex(triangle.C, colorVector, normal: normal)
 			});
 
 			renderContext3D.DrawArrays(PrimitiveType.Triangles);
