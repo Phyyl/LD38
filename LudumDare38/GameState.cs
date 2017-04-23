@@ -10,7 +10,7 @@ namespace LudumDare38
 {
 	public struct GameState
 	{
-		private const float renderDistanceChangeSpeed = 10;
+		private const float animationSpeed = 10;
 
 		public int MenuSelectedX;
 		public int MenuSelectedY;
@@ -21,10 +21,11 @@ namespace LudumDare38
 		public Vector3 MenuCurrentAngle;
 		public Vector3 MenuTargetAngle;
 		public Vector3 MenuPosition;
-		
+
 		public void Initialize()
 		{
 			MenuPosition.Z = -10;
+			MenuSelectedY = 1;
 
 			UpdateAngles();
 			MenuCurrentAngle = MenuTargetAngle;
@@ -32,23 +33,23 @@ namespace LudumDare38
 
 		public void Update(float delta)
 		{
-			float renderDistanceDelta = (float)((Math.Cos(2 * Math.PI * (LevelRenderDistance + 0.5f)) + 1.2f) / 2.4f) * delta * renderDistanceChangeSpeed;
+			MenuCurrentAngle += (MenuTargetAngle - MenuCurrentAngle) * delta * animationSpeed;
 
 			if (InLevel)
 			{
 				if (LevelRenderDistance < 1)
 				{
-					LevelRenderDistance += renderDistanceDelta;
+					LevelRenderDistance += (1 - LevelRenderDistance) * delta * animationSpeed;
 				}
 			}
 			else
 			{
 				if (LevelRenderDistance > 0)
 				{
-					LevelRenderDistance -= renderDistanceDelta;
+					LevelRenderDistance -= LevelRenderDistance * delta * animationSpeed;
 				}
 			}
-
+			
 			LevelRenderDistance = MathHelper.Clamp(LevelRenderDistance, 0, 1);
 		}
 
@@ -71,6 +72,11 @@ namespace LudumDare38
 			}
 
 			return (((4 - (MenuSelectedX / 2 + 1)) + 3) % 5) + 15;
+		}
+
+		private float InterpolateSmooth(float current, float target)
+		{
+			return 0;
 		}
 	}
 }

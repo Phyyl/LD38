@@ -64,7 +64,7 @@ namespace LudumDare38
 			}
 			else
 			{
-				if (key == Key.Enter) state.InLevel = true;
+				if (key == Key.Space) state.InLevel = true;
 				if (key == Key.A) state.MenuSelectedX -= 2 - (state.MenuSelectedY % 2);
 				if (key == Key.D) state.MenuSelectedX += 2 - (state.MenuSelectedY % 2);
 				if (key == Key.W && (state.MenuSelectedY == 0 || state.MenuSelectedX % 2 != 0)) state.MenuSelectedY++;
@@ -119,9 +119,9 @@ namespace LudumDare38
 			{
 				renderContext3D.Push();
 
-				renderContext3D.RotateZ(state.MenuTargetAngle.Z);
-				renderContext3D.RotateY(state.MenuTargetAngle.Y);
-				renderContext3D.RotateX(state.MenuTargetAngle.X);
+				renderContext3D.RotateZ(state.MenuCurrentAngle.Z);
+				renderContext3D.RotateY(state.MenuCurrentAngle.Y);
+				renderContext3D.RotateX(state.MenuCurrentAngle.X);
 
 				renderContext3D.Translate(state.MenuPosition);
 
