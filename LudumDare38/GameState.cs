@@ -33,7 +33,17 @@ namespace LudumDare38
 
 		public void Update(float delta)
 		{
-			MenuCurrentAngle += (MenuTargetAngle - MenuCurrentAngle) * delta * animationSpeed;
+			float FixedAngle(float a, float s) => Math.Abs(a) > MathHelper.Pi ? (s + MathHelper.TwoPi * Math.Sign(a)) : s;
+
+			Vector3 deltaAngle = MenuTargetAngle - MenuCurrentAngle;
+
+			MenuCurrentAngle.X = FixedAngle(deltaAngle.X, MenuCurrentAngle.X);
+			MenuCurrentAngle.Y = FixedAngle(deltaAngle.Y, MenuCurrentAngle.Y);
+			MenuCurrentAngle.Z = FixedAngle(deltaAngle.Z, MenuCurrentAngle.Z);
+
+			deltaAngle = MenuTargetAngle - MenuCurrentAngle;
+
+			MenuCurrentAngle += deltaAngle * delta * animationSpeed;
 
 			if (InLevel)
 			{
@@ -49,7 +59,7 @@ namespace LudumDare38
 					LevelRenderDistance -= LevelRenderDistance * delta * animationSpeed;
 				}
 			}
-			
+
 			LevelRenderDistance = MathHelper.Clamp(LevelRenderDistance, 0, 1);
 		}
 
