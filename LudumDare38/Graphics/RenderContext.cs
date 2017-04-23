@@ -321,6 +321,11 @@ namespace LudumDare38.Graphics
 			Translate(translation.X, translation.Y);
 		}
 
+		public void Translate(Vector3 translation)
+		{
+			Translate(translation.X, translation.Y, translation.Z);
+		}
+
 		public void Translate(float x, float y)
 		{
 			Translate(x, y, 0);

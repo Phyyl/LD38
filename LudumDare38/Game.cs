@@ -1,6 +1,8 @@
 ﻿using LudumDare38.Graphics;
 using LudumDare38.Maths;
+using LudumDare38.Resources;
 using LudumDare38.Shapes;
+using LudumDare38.Utility;
 using Newtonsoft.Json;
 using OpenTK;
 using OpenTK.Graphics;
@@ -17,15 +19,15 @@ namespace LudumDare38
 {
 	public partial class Game
 	{
+		private const float menuMoveSpeed = 5;
+
 		private RenderContext renderContext3D;
 		private RenderContext renderContext2D;
 
-		Triangle[] triangles;
+		private World world;
+		private GameState state;
 
-        private Pos characterPos;
-
-        int currentLevel;
-        Level[] levels;
+		private Level[] levels;
 
 		public Game()
 		{
@@ -40,13 +42,11 @@ namespace LudumDare38
 			renderContext3D = new RenderContext();
 			renderContext2D = new RenderContext();
 
-			triangles = IcoSphereGenerator.Generate();
+			world = new World();
+			levels = JsonConvert.DeserializeObject<Level[]>(ResourceManager.LoadEmbedded<string>("Resources/levels.json"));
 
-            // character Start position determined in the map file
-            characterPos = new Pos { X = 0, Y = 0 };
-
-            levels = JsonConvert.DeserializeObject<Level[]>(Resources.ResourceManager.LoadEmbedded<string>("Resources/levels.json"));
-        }
+			state.Initialize();
+		}
 
 		private void Resize(int width, int height)
 		{
@@ -56,17 +56,46 @@ namespace LudumDare38
 			renderContext2D.ViewMatrix = Matrix4.CreateOrthographicOffCenter(0, width, height, 0, 1, -1);
 		}
 
-		private void Update(float delta)
+		private void OnKeyDown(Key key, KeyModifiers modifiers)
 		{
-            // if level is not done
-            if (levels[currentLevel].Map[characterPos.X, characterPos.Y] != 100 /*&& in a level*/)
-            {
-                MoveCharacter(); ;
-            }
+			if (state.InLevel)
+			{
+				if (key == Key.Escape) state.InLevel = false;
+			}
+			else
+			{
+				if (key == Key.Enter) state.InLevel = true;
+				if (key == Key.A) state.MenuSelectedX -= 2 - (state.MenuSelectedY % 2);
+				if (key == Key.D) state.MenuSelectedX += 2 - (state.MenuSelectedY % 2);
+				if (key == Key.W && (state.MenuSelectedY == 0 || state.MenuSelectedX % 2 != 0)) state.MenuSelectedY++;
+				if (key == Key.S && (state.MenuSelectedY == 2 || state.MenuSelectedX % 2 == 0)) state.MenuSelectedY--;
+
+				state.MenuSelectedY = MathHelper.Clamp(state.MenuSelectedY, 0, 2);
+				state.MenuSelectedX = MathUtility.Mod(state.MenuSelectedX, 10);
+
+				state.UpdateAngles();
+			}
 		}
 
-		float angle;
-		Random random = new Random();
+		private void OnKeyUp(Key key, KeyModifiers modifiers)
+		{
+
+		}
+
+		private void OnKeyPress(char keyChar)
+		{
+
+		}
+
+		private void Update(float delta)
+		{
+			//if (levels[currentLevel].Map[characterPos.X, characterPos.Y] != 100)
+			//{
+			//	MoveCharacter();
+			//}
+
+			state.Update(delta);
+		}
 
 		private void Render(float delta)
 		{
@@ -83,62 +112,30 @@ namespace LudumDare38
 		private void Render3D(float delta)
 		{
 			renderContext3D.LoadIdentity();
-			renderContext3D.RotateY(angle += delta);
-			renderContext3D.Translate(0, 0, -10);
 
-			foreach (var triangle in triangles)
+			int selectedIndex = state.GetSelectedIndex();
+
+			for (int i = 0; i < 20; i++)
 			{
-				DrawTriangle(triangle, Color4.Red);
+				renderContext3D.Push();
+
+				renderContext3D.RotateZ(state.MenuTargetAngle.Z);
+				renderContext3D.RotateY(state.MenuTargetAngle.Y);
+				renderContext3D.RotateX(state.MenuTargetAngle.X);
+
+				renderContext3D.Translate(state.MenuPosition);
+
+				if (i == selectedIndex)
+				{
+					renderContext3D.Translate(new Vector3(0, 0, 4 * state.LevelRenderDistance));
+				}
+
+				WorldMap worldMap = world.WorldMaps[i];
+				DrawTriangle(world.WorldMaps[i].Triangle, worldMap.Color);
+
+				renderContext3D.Pop();
 			}
 		}
-        
-        private void MoveCharacter()
-        {
-            Pos pos = characterPos;
-            int[,] map = levels[currentLevel].Map;
-
-            // some movement have priority over other if pressed at the same time cuz im that bad
-            if (IsDownPressed)
-            {
-                if (pos.Y < 8
-                    && ((pos.X % 2 == 0 && pos.Y % 2 != 0)
-                    || (pos.X % 2 != 0 && pos.Y % 2 == 0))
-                    && map[pos.X, pos.Y + 1] != 0)
-                {
-                    characterPos.Y++;
-                }
-            }
-            else if (IsLeftPressed)
-            {
-                if (pos.X > 0 && map[pos.X - 1, pos.Y] != 0)
-                {
-                    characterPos.X--;
-                }
-            }
-            else if (IsRightPressed)
-            {
-                if (pos.X < 15 - 1 && map[pos.X + 1, pos.Y] != 0)
-                {
-                    characterPos.X++;
-                }
-            }
-            else if (IsUpPressed)
-            {
-                if (pos.X > 0 
-                    && ((pos.X % 2 == 0 && pos.Y % 2 == 0) 
-                    || (pos.X % 2 != 0 && pos.Y % 2 != 0)) 
-                    && map[pos.X, pos.Y - 1] != 0)
-                {
-                    characterPos.Y--;
-                }
-            }
-        }
-
-        struct Pos
-        {
-            public int X;
-            public int Y;
-        }
 
 		private void RenderUI(float delta)
 		{
@@ -161,6 +158,48 @@ namespace LudumDare38
 			});
 
 			renderContext3D.DrawArrays(PrimitiveType.Triangles);
+		}
+
+		private void MoveCharacter()
+		{
+			//Pos pos = characterPos;
+			//int[,] map = levels[currentLevel].Map;
+
+			//// some movement have priority over other if pressed at the same time cuz im that bad
+			//if (IsDownPressed)
+			//{
+			//	if (pos.Y < 8
+			//		&& ((pos.X % 2 == 0 && pos.Y % 2 != 0)
+			//		|| (pos.X % 2 != 0 && pos.Y % 2 == 0))
+			//		&& map[pos.X, pos.Y + 1] != 0)
+			//	{
+			//		characterPos.Y++;
+			//	}
+			//}
+			//else if (IsLeftPressed)
+			//{
+			//	if (pos.X > 0 && map[pos.X - 1, pos.Y] != 0)
+			//	{
+			//		characterPos.X--;
+			//	}
+			//}
+			//else if (IsRightPressed)
+			//{
+			//	if (pos.X < 15 - 1 && map[pos.X + 1, pos.Y] != 0)
+			//	{
+			//		characterPos.X++;
+			//	}
+			//}
+			//else if (IsUpPressed)
+			//{
+			//	if (pos.X > 0
+			//		&& ((pos.X % 2 == 0 && pos.Y % 2 == 0)
+			//		|| (pos.X % 2 != 0 && pos.Y % 2 != 0))
+			//		&& map[pos.X, pos.Y - 1] != 0)
+			//	{
+			//		characterPos.Y--;
+			//	}
+			//}
 		}
 	}
 }

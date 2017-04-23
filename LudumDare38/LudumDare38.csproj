@@ -53,12 +53,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GameState.cs" />
     <Compile Include="Graphics\BasePrimitivesShaderProgram.cs" />
     <Compile Include="Graphics\BaseShaderProgram.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Level.cs" />
     <Compile Include="Graphics\LitPrimitivesShaderProgram.cs" />
     <Compile Include="Graphics\Textures.cs" />
+    <Compile Include="Maths\MathConstants.cs" />
     <Compile Include="Maths\RayTracing.cs" />
     <Compile Include="Maths\VectorMath.cs" />
     <Compile Include="Resources\EmbeddedResources.cs" />
@@ -84,6 +86,9 @@
     <Compile Include="Graphics\Vao.cs" />
     <Compile Include="Graphics\Vbo.cs" />
     <Compile Include="Graphics\Vertex.cs" />
+    <Compile Include="Utility\MathUtility.cs" />
+    <Compile Include="World.cs" />
+    <Compile Include="WorldMap.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

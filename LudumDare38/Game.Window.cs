@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OpenTK.Input;
 
 namespace LudumDare38
 {
@@ -20,6 +21,25 @@ namespace LudumDare38
 			window.Resize += Window_Resize;
 			window.RenderFrame += Window_RenderFrame;
 			window.UpdateFrame += Window_UpdateFrame;
+
+			window.KeyDown += Window_KeyDown;
+			window.KeyUp += Window_KeyUp;
+			window.KeyPress += Window_KeyPress;
+		}
+		
+		private void Window_KeyDown(object sender, OpenTK.Input.KeyboardKeyEventArgs e)
+		{
+			OnKeyDown(e.Key, e.Modifiers);
+		}
+
+		private void Window_KeyUp(object sender, OpenTK.Input.KeyboardKeyEventArgs e)
+		{
+			OnKeyUp(e.Key, e.Modifiers);
+		}
+		
+		private void Window_KeyPress(object sender, KeyPressEventArgs e)
+		{
+			OnKeyPress(e.KeyChar);
 		}
 
 		private GraphicsMode CreateGraphicsMode(int samples)
